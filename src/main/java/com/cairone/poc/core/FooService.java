@@ -7,6 +7,7 @@ import com.cairone.poc.data.patients.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -21,6 +22,7 @@ public class FooService {
         patientRepository.findAll().forEach(patient -> log.info(patient.toString()));
     }
 
+    @Transactional
     public void create() {
 
         doctorRepository.saveAndFlush(new DoctorEntity(100L, "Dr. House"));
