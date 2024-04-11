@@ -2,6 +2,7 @@ package com.cairone.poc.cfg;
 
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
+import jakarta.transaction.SystemException;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
 import org.springframework.context.annotation.Bean;
@@ -34,14 +35,14 @@ public class AtomikosCfg {
     }
 
     @Bean(name = "userTransaction")
-    public UserTransaction userTransaction() throws Throwable {
+    public UserTransaction userTransaction() throws SystemException {
         UserTransactionImp userTransactionImp = new UserTransactionImp();
         userTransactionImp.setTransactionTimeout(10000);
         return userTransactionImp;
     }
 
     @Bean(name = "atomikosTransactionManager", initMethod = "init", destroyMethod = "close")
-    public TransactionManager atomikosTransactionManager() throws Throwable {
+    public TransactionManager atomikosTransactionManager() {
         UserTransactionManager userTransactionManager = new UserTransactionManager();
         userTransactionManager.setForceShutdown(false);
         return userTransactionManager;
@@ -49,7 +50,7 @@ public class AtomikosCfg {
 
     @Bean(name = "transactionManager")
     @DependsOn({"userTransaction", "atomikosTransactionManager"})
-    public PlatformTransactionManager transactionManager() throws Throwable {
+    public PlatformTransactionManager transactionManager() throws SystemException {
         UserTransaction userTransaction = userTransaction();
         TransactionManager atomikosTransactionManager = atomikosTransactionManager();
         return new JtaTransactionManager(userTransaction, atomikosTransactionManager);
